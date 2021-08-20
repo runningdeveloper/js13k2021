@@ -26,7 +26,11 @@ export default {
                 arguments: true,
                 passes: 4,
                 unsafe_arrows: true,
+                module: true,
               },
+              format:{
+                comments: false,
+              }
             },
           },
         ],
