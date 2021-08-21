@@ -1,109 +1,131 @@
 import {
-    init,
-    Sprite,
-    GameLoop,
-    initKeys,
-    keyPressed,
-    Text,
-    Scene,
-    collides,
-    Grid,
-    keyMap,
-    getStoreItem,
-    setStoreItem,
-    randInt,
-    load,
-    imageAssets,
-    SpriteSheet,
-    audioAssets,
-  } from "kontra";
-  
-  import { textOptions } from "./utils.js";
-  
-  async function main() {
-    let { canvas } = init();
-    let count = 0;
-    initKeys();
-    // await load(
-    // );
+  init,
+  Sprite,
+  GameLoop,
+  initKeys,
+  keyPressed,
+  Scene,
+  collides
+} from "kontra";
 
-    let ship = Sprite({
-      x: (canvas.width / 3)-40,
-      y: (canvas.height / 2) - 150,
-      color: 'red',
-      width: 80,
-      height: 300,
-      // dx: 2
-    });
+import { menuScene } from "./menu.js";
+import { infoScene, changeDebug } from "./info.js";
 
-    let astronaut = Sprite({
-      x: (canvas.width / 3 * 2)-10,
-      y: canvas.height / 2,
-      color: 'blue',
-      width: 20,
-      height: 20,
-      // dx: 2
-    });
 
-    let gameScene = Scene({
-      id: "game",
-      children: [ship, astronaut],
-    });
+let { canvas } = init();
 
-    let start = Text({
-      text: "Count",
-      ...textOptions,
-    });
-  
-    let menu = Grid({
-      x: canvas.width / 2,
-      y: canvas.height / 2,
-      anchor: { x: 0.5, y: 0.5 },
-      rowGap: 15,
-      justify: "center",
-      children: [start],
-    });
-  
-    let menuScene = Scene({
-      id: "menu",
-      onShow() {
-        console.log("menu showed");
-      },
-      children: [menu],
-    });
-  
-    
-    let loop = GameLoop({
-      // create the main game loop
-      update: function() {
-      //  start.text = `Count ${count++}`
-      gameScene.update();
-      if(collides(astronaut, ship)){
-        astronaut.color = astronaut.color === 'blue'?'white':'blue'
+const speedToDie = 2 // speed that will kill you if hit ship
+const speedToDock = 0.4 // to dock need less than this speed 
+
+
+let state = 'menu'
+let count = 0;
+initKeys();
+// await load(
+// );
+
+let ship = Sprite({
+  x: (canvas.width / 3),
+  y: (canvas.height / 2),
+  anchor: { x: 0.5, y: 0.5 },
+  color: 'red',
+  width: 80,
+  height: 300,
+  // dx: 2
+});
+
+let astronaut = Sprite({
+  x: (canvas.width / 3 * 2),
+  y: canvas.height / 2,
+  anchor: { x: 0.5, y: 0.5 },
+  color: 'blue',
+  width: 20,
+  height: 20,
+  // dx: 2
+});
+
+const reset = () => {
+  astronaut.dx = 0
+  astronaut.dy = 0
+  astronaut.x = (canvas.width / 3 * 2)
+  astronaut.y = canvas.height / 2
+}
+
+let gameScene = Scene({
+  id: "game",
+  children: [ship, astronaut],
+  update: () => {
+    // changeDebug(``)
+    if (collides(astronaut, ship)) {
+      astronaut.color = astronaut.color === 'blue' ? 'white' : 'blue'
+      // bounce off ship? maybe if i hit it too hard I die
+      astronaut.dx = astronaut.x >= ship.x + ship.width / 2 || astronaut.x <= ship.x - ship.width / 2 ? -1 * astronaut.dx : astronaut.dx
+      astronaut.dy = astronaut.y >= ship.y + ship.height / 2 || astronaut.y <= ship.y - ship.height / 2 ? -1 * astronaut.dy : astronaut.dy
+      if (astronaut.velocity.length() > speedToDie) {
+        changeDebug(`${'Died too fast'}`)
+        state = 'menu'
+        reset()
       }
-        if (keyPressed('left')){
-          astronaut.dx=astronaut.dx-0.1
-        }
-        else if (keyPressed('right')) {
-          astronaut.dx=astronaut.dx+0.1
-        }
-    
-        if (keyPressed('up')) {
-          astronaut.dy=astronaut.dy-0.1
-        }
-        else if (keyPressed('down')) {
-          astronaut.dy=astronaut.dy+0.1
-        }
-      },
-      render: function() {
-        
-        // console.log(astronaut)
-        gameScene.render()
+      else if (astronaut.velocity.length() < speedToDock) {
+        changeDebug(`${'Dock Ok'}`)
+      } else {
+        changeDebug(`${'Too fast'}`)
+      }
+    }
+    if (keyPressed('left')) {
+      astronaut.dx = astronaut.dx - 0.1
+    }
+    else if (keyPressed('right')) {
+      astronaut.dx = astronaut.dx + 0.1
+    }
 
-      },
-    });
-  
-    loop.start(); // start the game
+    if (keyPressed('up')) {
+      astronaut.dy = astronaut.dy - 0.1
+    }
+    else if (keyPressed('down')) {
+      astronaut.dy = astronaut.dy + 0.1
+    }
   }
-  
-  main();
+});
+
+// let start = Text({
+//   text: "Count",
+//   ...textOptions,
+// });  
+
+
+
+let loop = GameLoop({
+  // create the main game loop
+  update: function () {
+    //  start.text = `Count ${count++}`
+
+    // debug.text = `${count++}`
+    if (state === 'menu') {
+      if (keyPressed('space')) {
+        state = 'started'
+      }
+      return
+    }
+
+
+    gameScene.update();
+
+    // changeDebug( `${astronaut.velocity.length()}`)
+
+  },
+  render: function () {
+
+    if (state === 'menu') {
+      menuScene.render()
+    } else {
+      gameScene.render()
+    }
+    // gameScene.render()
+
+    infoScene.render()
+
+  },
+});
+
+loop.start(); // start the game
