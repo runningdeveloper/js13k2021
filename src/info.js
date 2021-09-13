@@ -1,43 +1,44 @@
 import {
     Text,
     Scene,
-    Grid,
-    Sprite,
     init
-  } from "kontra";
-  
-  import { textOptions } from "./utils.js";
-  let { canvas } = init();
-  export let debug = Text({
+} from "kontra";
+import { state } from "./state.js";
+
+import { textOptions } from "./utils.js";
+let { canvas } = init();
+export let debug = Text({
     text: "",
     ...textOptions,
-  });
+});
 
-  let score = Text({
-    text: "0",
+let fuel = Text({
+    text: "Fuel Left: 0",
     ...textOptions,
-  });
+    x: 5,
+    y: 5,
+});
+
+let distance = Text({
+    text: "0m",
+    ...textOptions,
+    textAlign: 'right',
+    anchor: { x: 1, y: 0 },
+    x: canvas.width - 5,
+    y: 5,
+});
 
 
-  let infoGrid = Grid({
-    x: canvas.width / 2,
-    y: canvas.height-debug.height,
-    anchor: { x: 0.5, y: 0.5 },
-    rowGap: 15,
-    colGap: 15,
-    flow: 'grid',
-    numCols: 3,
-    align: 'center',
-    children: [debug],
-  });
-
-  export const changeDebug = (text) => {
-    debug.text = text
-      setTimeout(() => {
-        debug.text = ''
-      }, 1000); }
-
-  export let  infoScene = Scene({
+export let infoScene = Scene({
     id: "info",
-    children: [infoGrid],
-  });
+    render: () => {
+        if (state.fuel < 10 || state.oxygen < 10) {
+            fuel.color = 'red'
+        } else {
+            fuel.color = 'white'
+        }
+        fuel.text = `Fuel Left: ${Math.round(state.fuel)}% Oxygen Left: ${Math.round(state.oxygen)}%`
+        distance.text = `${Math.round(state.distance)}m`
+    },
+    children: [distance, fuel],
+});

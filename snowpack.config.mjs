@@ -4,8 +4,17 @@ export default {
         src: '/',
       },
 
-      buildOptions: {
-        minify: false,
+    //   buildOptions: {
+    //     minify: false,
+    //     bundle: true,
+    //   },
+      optimize: {
+        bundle: true,
+        minify: true,
+        target: 'es2019',
+        treeshake: true,
+        sourcemap: false,
+        manifest: false
       },
       plugins: [
         [
@@ -18,21 +27,21 @@ export default {
               },
             },
           ],
-        [
-          'snowpack-plugin-terser',
-          {
-            terserOptions: {
-              compress: {
-                arguments: true,
-                passes: 4,
-                unsafe_arrows: true,
-                module: true,
-              },
-              format:{
-                comments: false,
-              }
-            },
-          },
-        ],
+        // [
+        //   'snowpack-plugin-terser',
+        //   {
+        //     terserOptions: {
+        //       compress: {
+        //         arguments: true,
+        //         passes: 4,
+        //         unsafe_arrows: true,
+        //         module: true,
+        //       },
+        //       format:{
+        //         comments: false,
+        //       }
+        //     },
+        //   },
+        // ],
       ],
   };
