@@ -38,7 +38,7 @@ const hatchSize = {
 
 
 initKeys();
-load('assets/astronaut-sprite.png', 'assets/ship.png', 'assets/crash.wav', 'assets/jump.wav', 'assets/done.wav'
+load('assets/astronaut-sprite.png', 'assets/ship.png', 'assets/crash.wav', 'assets/jump.wav', 'assets/done2.wav'
 ).then(() => {
 
   let ship = Sprite({
@@ -136,7 +136,7 @@ load('assets/astronaut-sprite.png', 'assets/ship.png', 'assets/crash.wav', 'asse
       if (collides(astronaut, hatch)) {
         if (astronaut.velocity.length() < speedToDock) {
           // Dock Ok
-          audioAssets["assets/done.wav"].play();
+          audioAssets["assets/done2.wav"].play();
           setState({ state: states.DOCKED })
         } else if (astronaut.velocity.length() > speedToDie) {
           // crash
