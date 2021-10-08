@@ -1,5 +1,7 @@
 # JS 13k 2021
 
+Game entry with feedback, no top 100 but that was expected as it was a little rushed - https://js13kgames.com/entries/spacewalk
+
 # Spacewalk game
 
 Try it [https://runningdeveloper.github.io/js13k2021/](https://runningdeveloper.github.io/js13k2021/)
